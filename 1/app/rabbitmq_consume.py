@@ -15,6 +15,7 @@ async def process_created_task(msg: IncomingMessage):
         data = json.loads(msg.body.decode())
         TaskService().create_task(data['title'], data['description'], UUID(data['user_id']))
         await msg.ack()
+        #print()
     except:
         traceback.print_exc()
         await msg.ack()
