@@ -49,7 +49,7 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker build ./1 -f ./1/Dockerfile --tag cr.yandex/${{ secrets.YC_REGISTRY_ID }}/attendance-service:latest
+          docker build ./1 -f ./1/Dockerfile --tag cr.yandex/${{ secrets.YC_REGISTRY_ID }}/task-service:latest
 
       - name: Login to YC Registry
         uses: docker/login-action@v3.0.0
@@ -60,7 +60,7 @@ jobs:
 
       - name: Push tag YC Registry
         run: |
-          docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/attendance-service:latest
+          docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/task-service:latest
 
   deploy:
     name: Deploy
@@ -73,7 +73,7 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_KEYS }}
           container-name: ${{ secrets.YC_CONTAINER_NAME }}
           folder-id: ${{ secrets.YC_FOLDER_ID }}
-          revision-image-url: cr.yandex/${{ secrets.YC_REGISTRY_ID }}/attendance-service:latest
+          revision-image-url: cr.yandex/${{ secrets.YC_REGISTRY_ID }}/task-service:latest
           revision-service-account-id: ${{ secrets.YC_SA_ID }}
           revision-env: |
             AMQP_URL=${{ secrets.ENV_AMQP_URL }}
