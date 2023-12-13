@@ -16,4 +16,4 @@ COPY ./alembic.ini /code/alembic.ini
 #COPY ./migrations /code/migrations
 COPY ./main.py /code/
 
-CMD ["/bin/sh", "-c", "alembic init migrations && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 80"]
+CMD ["/bin/sh", "-c", "alembic init migrations && alembic revision --autogenerate -m add_db_task && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 80"]
