@@ -21,6 +21,42 @@ jobs:
     steps:
       - uses: actions/checkout@v3         
       
+      - name: Prepare unit tests
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install -r ./1/requirements.txt
+
+      - name: Run unit tests
+        run: |
+          cd ./1
+          pytest ./tests/unit
+        env:
+          AMQP_URL: amqp://guest:guest123@51.250.26.59:5672/
+          POSTGRES_URL: postgresql://postgres:1234@localhost:5432/students_pr6
+          PORT: 80
+          
+      - name: Prepare integration tests
+        run: |
+          sudo docker run --name pg-tests -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:14
+          cd ./1
+          rm ./.env
+          echo "AMQP_URL=$AMQP_URL
+          POSTGRES_URL=$POSTGRES_URL
+          PORT=$PORT
+          " > .env
+          sleep 5
+          alembic upgrade head
+        env:
+          AMQP_URL: amqp://guest:guest123@51.250.26.59:5672/
+          POSTGRES_URL: postgresql://postgres:password@localhost:5432/postgres
+          PORT: 80
+
+      - name: Run integration tests
+        run: |
+          cd ./1
+          python -m pytest ./tests/integration
+          
   build-and-push-to-dh:
     name: Build and push to DockerHub
     runs-on: ubuntu-latest
@@ -39,7 +75,7 @@ jobs:
 
       - name: Push tag to DockerHub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/task-service:latest   
+          docker push ${{ secrets.DOCKER_USERNAME }}/task-service:latest 
           
   build-and-push-to-yc:
     name: Build and push to YandexCloud Registry
