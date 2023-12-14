@@ -38,6 +38,7 @@ jobs:
           
       - name: Prepare integration tests
         run: |
+          sudo docker run --name pg-tests -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:14
           cd ./1
           rm ./.env
           echo "AMQP_URL=$AMQP_URL
@@ -45,10 +46,12 @@ jobs:
           PORT=$PORT
           " > .env
           sleep 5
+          alembic init migrations
+          alembic revision --autogenerate -m add_db_task
           alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest123@51.250.26.59:5672/
-          POSTGRES_URL: ${{ secrets.ENV_POSTGRES_URL }}
+          POSTGRES_URL: postgresql://postgres:password@localhost:5432/postgres
           PORT: 80
 
       - name: Run integration tests
