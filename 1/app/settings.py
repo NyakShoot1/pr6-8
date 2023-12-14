@@ -2,8 +2,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    amqp_url: str
-    postgres_url: str
+    amqp_url: str = ""
+    postgres_url: str = "postgresql://secUREusER:StrongEnoughPassword)@51.250.26.59:5432/orlov"
     model_config = SettingsConfigDict(env_file='.env')
 
 

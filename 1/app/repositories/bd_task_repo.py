@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.task import Task
+from app.models.task import Task, TaskStatuses
 from app.schemas.task import Task as DBTask
 
 
@@ -31,7 +31,7 @@ class TaskRepo:
     def get_tasks(self) -> list[Task]:
         tasks = []
         for t in self.db.query(DBTask).all():
-            tasks.append(t)
+            tasks.append(self._map_to_model(t))
         return tasks
 
     def get_task_by_id(self, id: UUID) -> Task:
@@ -39,10 +39,9 @@ class TaskRepo:
             .query(DBTask) \
             .filter(DBTask.id == id) \
             .first()
-        task = self._map_to_model(task)
         if task == None:
             raise KeyError
-        return task
+        return self._map_to_model(task)
 
     def create_task(self, task: Task) -> Task:
         try:
@@ -57,6 +56,6 @@ class TaskRepo:
     def done_task(self, task: Task) -> Task:
         db_task = self.db.query(DBTask).filter(
             DBTask.id == task.id).first()
-        db_task.status = task.status
+        db_task.status = TaskStatuses.DONE
         self.db.commit()
         return self._map_to_model(db_task)
