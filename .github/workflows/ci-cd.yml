@@ -46,8 +46,6 @@ jobs:
           PORT=$PORT
           " > .env
           sleep 5
-          alembic init migrations
-          alembic revision --autogenerate -m add_db_task
           alembic upgrade head
         env:
           AMQP_URL: amqp://guest:guest123@51.250.26.59:5672/
