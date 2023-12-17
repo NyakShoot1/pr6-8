@@ -28,7 +28,7 @@ class TaskRepo:
     def done_task(self, task: Task) -> Task:
         for t in tasks:
             if t.id == task.id:
-                t.status = TaskStatuses.DONE
+                t.status = task.status
                 break
 
         return task
